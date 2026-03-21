@@ -1,9 +1,9 @@
-import { DesignSystemPage } from './pages/DesignSystem';
+import { PatientIntake } from './pages/PatientIntake';
 
 export default function App() {
   return (
     <main className="min-h-screen bg-background text-text-primary antialiased">
-      <DesignSystemPage />
+      <PatientIntake />
     </main>
   );
 }
