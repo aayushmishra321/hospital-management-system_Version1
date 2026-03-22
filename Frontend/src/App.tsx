@@ -1,9 +1,9 @@
-import { PatientIntake } from './pages/PatientIntake';
+import { QueueBoard } from './pages/QueueBoard';
 
 export default function App() {
   return (
     <main className="min-h-screen bg-background text-text-primary antialiased">
-      <PatientIntake />
+      <QueueBoard />
     </main>
   );
 }
