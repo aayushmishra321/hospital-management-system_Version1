@@ -1,9 +1,9 @@
-import { DoctorConsultation } from './pages/DoctorConsultation';
+import { BillingDashboard } from './pages/BillingDashboard';
 
 export default function App() {
   return (
     <main className="min-h-screen bg-background text-text-primary antialiased">
-      <DoctorConsultation />
+      <BillingDashboard />
     </main>
   );
 }
