@@ -1,9 +1,9 @@
-import { PatientDashboard } from './pages/PatientDashboard';
+import { AdminReports } from './pages/AdminReports';
 
 export default function App() {
   return (
     <main className="min-h-screen bg-background text-text-primary antialiased">
-      <PatientDashboard />
+      <AdminReports />
     </main>
   );
 }
