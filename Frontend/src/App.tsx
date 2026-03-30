@@ -1,9 +1,9 @@
-import { DoctorSchedule } from './pages/DoctorSchedule';
+import { NotificationPreferences } from './pages/NotificationPreferences';
 
 export default function App() {
   return (
     <main className="min-h-screen bg-background text-text-primary antialiased">
-      <DoctorSchedule />
+      <NotificationPreferences />
     </main>
   );
 }
