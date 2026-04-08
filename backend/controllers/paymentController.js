@@ -29,3 +29,19 @@ exports.processPayment = async (req, res) => {
         res.status(500).json({ message: 'Error processing payment', error: error.message });
     }
 };
+exports.getPaymentHistory = async (req, res) => {
+    try {
+        const payments = await Payment.find({})
+            .populate('bill', 'items totalAmount')
+            .populate('patient', 'name email')
+            .populate('receivedBy', 'name role');
+
+        res.status(200).json({
+            success: true,
+            count: payments.length,
+            data: payments,
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching payment history', error: error.message });
+    }
+};
