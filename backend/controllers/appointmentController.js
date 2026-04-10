@@ -46,3 +46,26 @@ exports.getAppointments = async (req, res) => {
         res.status(500).json({ message: 'Error fetching appointments', error: error.message });
     }
 };
+exports.cancelAppointment = async (req, res) => {
+    try {
+        const { appointmentId } = req.params;
+
+        const appointment = await Appointment.findByIdAndUpdate(
+            appointmentId,
+            { status: 'Cancelled' },
+            { new: true }
+        );
+
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Appointment cancelled successfully',
+            data: appointment,
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error cancelling appointment', error: error.message });
+    }
+};
