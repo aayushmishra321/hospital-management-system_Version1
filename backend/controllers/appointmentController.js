@@ -23,3 +23,26 @@ exports.createAppointment = async (req, res) => {
         res.status(500).json({ message: 'Error booking appointment', error: error.message });
     }
 };
+exports.getAppointments = async (req, res) => {
+    try {
+        const filter = {};
+        if (req.user.role === 'Patient') {
+            filter.patient = req.user.id;
+        } else if (req.user.role === 'Doctor') {
+            filter.doctor = req.user.id;
+        }
+
+        const appointments = await Appointment.find(filter)
+            .populate('patient', 'name email phone')
+            .populate('doctor', 'name email metadata')
+            .sort({ date: 1 });
+
+        res.status(200).json({
+            success: true,
+            count: appointments.length,
+            data: appointments,
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching appointments', error: error.message });
+    }
+};
