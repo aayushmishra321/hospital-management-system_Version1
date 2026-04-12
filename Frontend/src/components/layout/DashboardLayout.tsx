@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navbar } from './Navbar';
-import { Footer } from './Footer';
+import { FlickeringFooter } from '../ui/flickering-footer';
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
@@ -9,7 +9,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
             <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
                 {children}
             </main>
-            <Footer />
+            <FlickeringFooter />
         </div>
     );
 };

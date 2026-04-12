@@ -5,4 +5,4 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.post('/create', protect, authorize('Receptionist', 'Admin'), createBill);
 
-module.exports = router; s
+module.exports = router;

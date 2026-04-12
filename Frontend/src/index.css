@@ -4,16 +4,67 @@
 
 @layer base {
   body {
-    background-color: #F5F6F5;
-    color: #12201C;
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
+    @apply bg-background text-text-primary font-body antialiased selection:bg-primary selection:text-surface;
+    /* Lenis smooth scroll requires html to not have smooth scrolling */
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-family: 'Fraunces', serif;
+  html.lenis {
+    height: auto;
   }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  .animate-slide-in-right {
+      animation: slideInRight 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+  }
+  
+  /* Staggered animations */
+  .stagger-1 { animation-delay: 100ms; }
+  .stagger-2 { animation-delay: 200ms; }
+  .stagger-3 { animation-delay: 300ms; }
+  .stagger-4 { animation-delay: 400ms; }
+}
+
+/* Base element styles for smooth transitions */
+a, button {
+  @apply transition-all duration-200;
 }

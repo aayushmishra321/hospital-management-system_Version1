@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { api } from '../api/axios';
 
 export const Login = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -18,8 +20,14 @@ export const Login = () => {
         try {
             const response = await api.post('/auth/login', { email, password });
             localStorage.setItem('hms_token', response.data.token);
-            alert(`Welcome back! Role: ${response.data.role}`);
-            // Future step: window.location.href = `/${response.data.role}/dashboard`;
+            const role = response.data.role;
+            localStorage.setItem('hms_role', role);
+
+            if (role === 'Admin') navigate('/admin');
+            else if (role === 'Doctor') navigate('/doctor/consultation');
+            else if (role === 'Receptionist') navigate('/queue');
+            else navigate('/patient');
+            
         } catch (err: any) {
             setError(err.response?.data?.message || 'Authentication failed. Please check your credentials.');
         } finally {
@@ -88,6 +96,13 @@ export const Login = () => {
                         <Button variant="primary" type="submit" className="w-full py-3 text-lg mt-4">
                             {isLoading ? 'Authenticating...' : 'Secure Sign In'}
                         </Button>
+                        
+                        <div className="mt-6 text-center text-sm text-text-secondary border-t border-border pt-6">
+                            Don't have an account?{' '}
+                            <Link to="/signup" className="text-primary hover:underline font-medium">
+                                Create one here
+                            </Link>
+                        </div>
                     </form>
                 </div>
             </div>

@@ -5,7 +5,9 @@ const doctorScheduleSchema = new mongoose.Schema({
     dayOfWeek: { type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], required: true },
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
-    isAvailable: { type: Boolean, default: true }
-});
+    isAvailable: { type: Boolean, default: true },
+}, { timestamps: true });
+
+doctorScheduleSchema.index({ doctor: 1, dayOfWeek: 1 }, { unique: true });
 
 module.exports = mongoose.model('DoctorSchedule', doctorScheduleSchema);

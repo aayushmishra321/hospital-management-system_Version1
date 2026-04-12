@@ -23,6 +23,7 @@ exports.createAppointment = async (req, res) => {
         res.status(500).json({ message: 'Error booking appointment', error: error.message });
     }
 };
+
 exports.getAppointments = async (req, res) => {
     try {
         const filter = {};
@@ -46,6 +47,31 @@ exports.getAppointments = async (req, res) => {
         res.status(500).json({ message: 'Error fetching appointments', error: error.message });
     }
 };
+
+exports.updateAppointmentStatus = async (req, res) => {
+    try {
+        const { appointmentId, status } = req.body;
+
+        const appointment = await Appointment.findByIdAndUpdate(
+            appointmentId,
+            { status },
+            { new: true }
+        );
+
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Appointment status updated',
+            data: appointment,
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating appointment status', error: error.message });
+    }
+};
+
 exports.cancelAppointment = async (req, res) => {
     try {
         const { appointmentId } = req.params;
