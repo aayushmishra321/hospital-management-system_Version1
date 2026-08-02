@@ -1,58 +1,117 @@
+import { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
-
-// Dummy data to simulate the live queue
-const mockQueue = [
-    { id: 1, token: '04', patient: 'Anjali Desai', doctor: 'Dr. Sharma', status: 'In-Consultation', type: 'warning' },
-    { id: 2, token: '05', patient: 'Vikram Singh', doctor: 'Dr. Sharma', status: 'Waiting', type: 'info' },
-    { id: 3, token: '06', patient: 'Priya Patel', doctor: 'Dr. Gupta', status: 'Scheduled', type: 'success' },
-    { id: 4, token: '07', patient: 'Rohan Mehta', doctor: 'Dr. Sharma', status: 'Cancelled', type: 'error' },
-];
+import { api } from '../api/axios';
 
 export const QueueBoard = () => {
+    const [queue, setQueue] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchQueue = async () => {
+        setLoading(true);
+        try {
+            const res = await api.get('/appointments/today');
+            setQueue(res.data.data || []);
+        } catch (err) {
+            console.error('Failed to fetch queue:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => { fetchQueue(); }, []);
+
+    const updateStatus = async (appointmentId: string, status: string) => {
+        try {
+            await api.put('/appointments/status', { appointmentId, status });
+            setQueue(prev => prev.map(q => q._id === appointmentId ? { ...q, status } : q));
+        } catch (err) {
+            alert('Failed to update status.');
+        }
+    };
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'In-Progress': return 'warning';
+            case 'Completed': return 'success';
+            case 'Cancelled': return 'error';
+            default: return 'info';
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-background p-8 max-w-5xl mx-auto">
+        <div className="min-h-screen bg-background p-4 md:p-8 max-w-5xl mx-auto">
             <div className="flex justify-between items-end mb-8">
                 <div>
                     <h1 className="text-3xl font-heading text-text-primary">Live Patient Queue</h1>
-                    <p className="text-text-secondary font-body mt-2">
-                        Monitor and manage today's walk-in and online appointments.
+                    <p className="text-text-secondary font-body mt-1">
+                        {queue.length} appointment{queue.length !== 1 ? 's' : ''} scheduled today
                     </p>
                 </div>
-                <Button variant="primary">Refresh Queue</Button>
+                <Button variant="primary" onClick={fetchQueue}>Refresh Queue</Button>
             </div>
 
             <Card title="Today's Appointments">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left font-body">
-                        <thead>
-                            <tr className="border-b border-border">
-                                <th className="pb-3 pt-2 px-4 font-semibold text-text-primary">Token</th>
-                                <th className="pb-3 pt-2 px-4 font-semibold text-text-primary">Patient Name</th>
-                                <th className="pb-3 pt-2 px-4 font-semibold text-text-primary">Doctor</th>
-                                <th className="pb-3 pt-2 px-4 font-semibold text-text-primary">Status</th>
-                                <th className="pb-3 pt-2 px-4 font-semibold text-text-primary text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {mockQueue.map((item) => (
-                                <tr key={item.id} className="border-b border-border hover:bg-surface/50 transition-colors">
-                                    <td className="py-4 px-4 font-mono font-medium text-text-primary">#{item.token}</td>
-                                    <td className="py-4 px-4 text-text-primary">{item.patient}</td>
-                                    <td className="py-4 px-4 text-text-secondary">{item.doctor}</td>
-                                    <td className="py-4 px-4">
-                                        {/* @ts-ignore - mapping the mock type to our badge status string */}
-                                        <Badge status={item.type} label={item.status} />
-                                    </td>
-                                    <td className="py-4 px-4 text-right space-x-2">
-                                        <Button variant="secondary">Mark Done</Button>
-                                    </td>
+                {queue.length === 0 ? (
+                    <p className="text-center text-text-secondary py-12">No appointments scheduled for today.</p>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left font-body text-sm">
+                            <thead className="border-b border-border">
+                                <tr>
+                                    <th className="pb-3 pt-2 px-4 font-semibold text-text-secondary">#</th>
+                                    <th className="pb-3 pt-2 px-4 font-semibold text-text-secondary">Patient Name</th>
+                                    <th className="pb-3 pt-2 px-4 font-semibold text-text-secondary">Doctor</th>
+                                    <th className="pb-3 pt-2 px-4 font-semibold text-text-secondary">Time</th>
+                                    <th className="pb-3 pt-2 px-4 font-semibold text-text-secondary">Status</th>
+                                    <th className="pb-3 pt-2 px-4 font-semibold text-text-secondary text-right">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {queue.map((item, i) => (
+                                    <tr key={item._id} className="border-b border-border hover:bg-surface/50 transition-colors">
+                                        <td className="py-4 px-4 font-mono font-bold text-primary">#{String(i + 1).padStart(2, '0')}</td>
+                                        <td className="py-4 px-4">
+                                            <p className="text-text-primary font-medium">{item.patient?.name || '—'}</p>
+                                            <p className="text-xs text-text-secondary">{item.patient?.phone || ''}</p>
+                                        </td>
+                                        <td className="py-4 px-4 text-text-secondary">{item.doctor?.name || '—'}</td>
+                                        <td className="py-4 px-4 font-mono text-text-secondary">{item.timeSlot || '—'}</td>
+                                        <td className="py-4 px-4">
+                                            <Badge status={getStatusBadge(item.status)} label={item.status} />
+                                        </td>
+                                        <td className="py-4 px-4 text-right space-x-2">
+                                            {item.status === 'Scheduled' && (
+                                                <Button variant="secondary" className="text-xs py-1" onClick={() => updateStatus(item._id, 'In-Progress')}>
+                                                    Start
+                                                </Button>
+                                            )}
+                                            {item.status === 'In-Progress' && (
+                                                <Button variant="primary" className="text-xs py-1" onClick={() => updateStatus(item._id, 'Completed')}>
+                                                    Mark Done
+                                                </Button>
+                                            )}
+                                            {(item.status === 'Scheduled' || item.status === 'In-Progress') && (
+                                                <Button variant="destructive" className="text-xs py-1" onClick={() => updateStatus(item._id, 'Cancelled')}>
+                                                    Cancel
+                                                </Button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </Card>
         </div>
     );

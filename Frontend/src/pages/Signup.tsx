@@ -25,6 +25,8 @@ export const Signup = () => {
             
             localStorage.setItem('hms_token', token);
             localStorage.setItem('hms_role', userRole);
+            localStorage.setItem('hms_name', response.data.name || '');
+
 
             if (userRole === 'Admin') navigate('/admin');
             else if (userRole === 'Doctor') navigate('/doctor/consultation');

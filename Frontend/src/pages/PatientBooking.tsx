@@ -85,36 +85,74 @@ export const PatientBooking = () => {
                     </div>
                 ) : (
                     <form className="space-y-6" onSubmit={handleBooking}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Department Selection */}
-                            <div>
-                                <label className="block text-sm font-medium text-text-primary mb-2">Department</label>
-                                <select
-                                    value={selectedDept}
-                                    onChange={(e) => setSelectedDept(e.target.value)}
-                                    className="w-full h-11 px-3 bg-surface border border-border rounded-lg text-text-primary font-body focus:outline-none focus:border-primary"
-                                >
-                                    <option value="Cardiology">Cardiology</option>
-                                    <option value="Pediatrics">Pediatrics</option>
-                                    <option value="General Medicine">General Medicine</option>
-                                    <option value="Orthopedics">Orthopedics</option>
-                                </select>
-                            </div>
-                            {/* Doctor Selection */}
-                            <div>
-                                <label className="block text-sm font-medium text-text-primary mb-2">Select Doctor</label>
-                                <select
-                                    value={selectedDoctorId}
-                                    onChange={(e) => setSelectedDoctorId(e.target.value)}
-                                    required
-                                    className="w-full h-11 px-3 bg-surface border border-border rounded-lg text-text-primary font-body focus:outline-none focus:border-primary"
-                                >
-                                    {doctors.length === 0 && <option value="">No doctors found</option>}
-                                    {doctors.map(doc => (
-                                        <option key={doc._id} value={doc._id}>{doc.name}</option>
-                                    ))}
-                                </select>
-                            </div>
+                        {/* Department Selection */}
+                        <div>
+                            <label className="block text-sm font-medium text-text-primary mb-2">Department</label>
+                            <select
+                                value={selectedDept}
+                                onChange={(e) => setSelectedDept(e.target.value)}
+                                className="w-full h-11 px-3 bg-surface border border-border rounded-lg text-text-primary font-body focus:outline-none focus:border-primary"
+                            >
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="General Medicine">General Medicine</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Dermatology">Dermatology</option>
+                            </select>
+                        </div>
+
+                        {/* Doctor Cards */}
+                        <div>
+                            <label className="block text-sm font-medium text-text-primary mb-3">Select Doctor</label>
+                            {doctors.length === 0 ? (
+                                <div className="p-6 border border-dashed border-border rounded-xl text-center text-text-secondary text-sm">
+                                    No doctors are currently registered. Please check back later.
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {doctors.map((doc) => {
+                                        const initials = doc.name
+                                            .split(' ')
+                                            .map((n: string) => n[0])
+                                            .join('')
+                                            .slice(0, 2)
+                                            .toUpperCase();
+                                        const isSelected = selectedDoctorId === doc._id;
+                                        return (
+                                            <button
+                                                key={doc._id}
+                                                type="button"
+                                                onClick={() => setSelectedDoctorId(doc._id)}
+                                                className={`flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-150 ${
+                                                    isSelected
+                                                        ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20'
+                                                        : 'border-border bg-surface hover:border-primary/40 hover:bg-background'
+                                                }`}
+                                            >
+                                                {/* Avatar */}
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 font-heading font-bold text-sm ${
+                                                    isSelected ? 'bg-primary text-white' : 'bg-primary/10 text-primary'
+                                                }`}>
+                                                    {initials}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className={`font-medium text-sm truncate ${isSelected ? 'text-primary' : 'text-text-primary'}`}>
+                                                        {doc.name}
+                                                    </p>
+                                                    <p className="text-xs text-text-secondary mt-0.5">{selectedDept}</p>
+                                                </div>
+                                                {/* Selected check */}
+                                                {isSelected && (
+                                                    <svg className="w-4 h-4 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                    </svg>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
 
                         {/* Date Picker */}

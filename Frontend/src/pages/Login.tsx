@@ -22,6 +22,8 @@ export const Login = () => {
             localStorage.setItem('hms_token', response.data.token);
             const role = response.data.role;
             localStorage.setItem('hms_role', role);
+            localStorage.setItem('hms_name', response.data.name || '');
+
 
             if (role === 'Admin') navigate('/admin');
             else if (role === 'Doctor') navigate('/doctor/consultation');

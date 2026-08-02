@@ -5,7 +5,9 @@ export const Navbar = () => {
 
     const handleSignOut = () => {
         localStorage.removeItem('hms_token');
-        navigate('/');
+        localStorage.removeItem('hms_role');
+        localStorage.removeItem('hms_name');
+        navigate('/login');
     };
 
     const role = localStorage.getItem('hms_role');
@@ -13,7 +15,12 @@ export const Navbar = () => {
     return (
         <header className="bg-primary text-surface px-8 py-4 flex justify-between items-center shadow-md">
             <div className="flex items-center gap-3">
-                <Link to="/" className="flex items-center gap-3">
+                <Link to={
+                    role === 'Admin' ? '/admin' : 
+                    role === 'Doctor' ? '/doctor/consultation' : 
+                    role === 'Patient' ? '/patient' : 
+                    (role === 'Receptionist' ? '/queue' : '/')
+                } className="flex items-center gap-3">
                     <span className="font-heading text-2xl font-bold tracking-tight">HMS</span>
                     <span className="px-2 py-0.5 bg-primary-dark text-xs font-mono rounded">v1.0 Enterprise</span>
                 </Link>
